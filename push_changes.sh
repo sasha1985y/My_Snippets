@@ -21,10 +21,10 @@ echo "Копирование файла $FILE_NAME..."
 cp "$SOURCE_REPO_DIR/$FILE_NAME" "$TEMP_DIR/repo/$FILE_NAME"
 
 # 3. Настраиваем Git в клоне (если это первый раз для этого репо)
-cd "$TEMP_DIR/repo"
+# cd "$TEMP_DIR/repo"
 # Замените на свои данные, если они отличаются
-git config user.email "your-email@example.com"
-git config user.name "Your Name"
+# git config user.email "your-email@example.com"
+# git config user.name "Your Name"
 
 # 4. Добавляем, коммитим и пушим изменения
 echo "Добавление и коммит изменений..."
