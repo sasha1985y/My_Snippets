@@ -4,7 +4,7 @@
 SOURCE_REPO_DIR="/путь/к/вашему/локальному/проекту" # Откуда берем файл
 REMOTE_URL="https://github.com/your-username/your-repo.git" # Куда отправляем
 USERNAME="your-username" # GitHub username для аутентификации, если нужно
-FILE_NAME="snippets.json"
+FILE_NAME="file.format"
 TEMP_DIR=$(mktemp -d)
 
 # 1. Клонируем удаленный репозиторий во временную папку
