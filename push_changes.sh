@@ -1,44 +1,60 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+ENV_FILE=".env"
+
+if [[ ! -f "$ENV_FILE" ]]; then
+  echo "Ошибка: файл $ENV_FILE не найден!" >&2
+  exit 1
+fi
+
+source "$ENV_FILE"
+
+set -e # Останавливаться при любой ошибке
+
 
 # Переменные (замените на свои данные)
-SOURCE_REPO_DIR="/путь/к/вашему/локальному/проекту" # Откуда берем файл
-REMOTE_URL="https://github.com/your-username/your-repo.git" # Куда отправляем
-USERNAME="your-username" # GitHub username для аутентификации, если нужно
-FILE_NAME="file.format"
+SOURCE_FILE="$SOURCE_FILE" # Откуда берем файл
+REMOTE_URL="$REMOTE_URL" # Куда отправляем
+USERNAME="$USERNAME" # GitHub username для аутентификации, если нужно
+TARGET_FILE="$TARGET_FILE"
 TEMP_DIR=$(mktemp -d)
+SSH_ADD="$SSH_ADD"
+ssh-add ~/.ssh/"$SSH_ADD"
 
 # 1. Клонируем удаленный репозиторий во временную папку
+cd ..
 echo "Клонируем удаленный репозиторий..."
-git clone --quiet "$REMOTE_URL" "$TEMP_DIR/repo" 2>/dev/null
+git clone --quiet "$REMOTE_URL" "$TEMP_DIR"/repo 2>/dev/null
 if [ $? -ne 0 ]; then
     echo "Ошибка: Не удалось клонировать репозиторий. Проверьте URL."
     rm -rf "$TEMP_DIR"
     exit 1
 fi
 
+if [[ ! -f "$TEMP_DIR"/repo/"$TARGET_FILE" ]]; then
+  echo "Ошибка: файл $TARGET_FILE не найден!" >&2
+  exit 1
+fi
+
 # 2. Копируем файл из текущего проекта в клон удаленного
-echo "Копирование файла $FILE_NAME..."
-cp "$SOURCE_REPO_DIR/$FILE_NAME" "$TEMP_DIR/repo/$FILE_NAME"
+echo "Копирование файла $SOURCE_FILE...."
 
-# 3. Настраиваем Git в клоне (если это первый раз для этого репо)
-# cd "$TEMP_DIR/repo"
-# Замените на свои данные, если они отличаются
-# git config user.email "your-email@example.com"
-# git config user.name "Your Name"
+cat C_Stepik/"$SOURCE_FILE" > "$TEMP_DIR"/repo/"$TARGET_FILE"
 
-# 4. Добавляем, коммитим и пушим изменения
+# 3. Добавляем, коммитим и пушим изменения
 echo "Добавление и коммит изменений..."
-git add "$FILE_NAME"
+cd "$TEMP_DIR"/repo
+
+git add "$TARGET_FILE"
 # Используем дату для уникальности сообщения коммита
-COMMIT_MSG="Обновление $FILE_NAME на $(date +'%Y_%m_%d_%H:%M:%S')"
+COMMIT_MSG="Обновление $TARGET_FILE на $(date +'%Y_%m_%d_%H:%M:%S')"
 git commit -m "$COMMIT_MSG"
 
 echo "Отправка изменений на GitHub..."
 git push origin main
 
-# 5. Очистка: удаляем временную папку
+# 4. Очистка: удаляем временную папку
 echo "Очистка временных файлов..."
-cd -
-rm -rf "$TEMP_DIR"
 
 echo "Готово!"
